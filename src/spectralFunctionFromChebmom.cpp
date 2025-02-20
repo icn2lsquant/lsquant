@@ -65,11 +65,11 @@ int main(int argc, char *argv[])
 		const double energ = energies[i];
 		for( int m0 = 0 ; m0 < mu.HighestMomentNumber() ; m0++)
 			output[i] += delta_chebF(energ,m0)*mu(m0).real() ;
-		output[i] *= mu.SystemSize()/mu.HalfWidth();
+		output[i] *= mu.SystemSize()*mu.ScaleFactor();
 	}
 
 	for( int i=0; i < num_div; i++)
-		outputfile<<energies[i]*mu.HalfWidth() + mu.BandCenter() <<" "<< output[i] <<std::endl;
+		outputfile<<energies[i]/mu.ScaleFactor() + mu.ShiftFactor() <<" "<< output[i] <<std::endl;
 
 	outputfile.close();
 

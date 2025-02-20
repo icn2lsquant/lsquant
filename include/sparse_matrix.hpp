@@ -74,10 +74,6 @@ public:
   void ConvertFromCOO(vector<int> &rows, vector<int> &cols, vector<complex<double> > &vals);
   void ConvertFromCSR(vector<int> &rowIndex, vector<int> &cols, vector<complex<double> > &vals);
 
-  vector<int>* rows() {return &rows_;};
-  vector<int>* cols() {return &cols_;};
-  vector<complex<double> >* vals(){return &vals_;};
-
 private:
   struct matrix_descr descr;
   sparse_matrix_t Matrix;
@@ -105,7 +101,7 @@ public:
     Sparse::OPERATOR_FromCSRFile(input, dim, columns, rowIndex, values);
     _matrix_type->setDimensions(dim, dim);
     _matrix_type->ConvertFromCSR(rowIndex, columns, values);
-    std::cout << "OPERATOR SUCCESSFULLY BUILT" << std::endl;
+    std::cout << "OPERATOR SUCCESSFULLY BUILD" << std::endl;
   }
   SparseMatrixType *_matrix_type;
 };

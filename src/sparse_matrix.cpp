@@ -45,6 +45,6 @@ bool Sparse::OPERATOR_FromCSRFile(const std::string input, int &dim, vector<int>
   }
   matrix_file.close();
 
-  std::cout << "FINISH READING.Status: SUCCEED" << std::endl;
+  std::cout << "FINISH READING.Status: SUCCED" << std::endl;
   return true;
 };

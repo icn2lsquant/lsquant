@@ -68,11 +68,11 @@ int main(int argc, char *argv[])
 		for( int m1 = 0 ; m1 < mu.HighestMomentNumber(1) ; m1++)
 			out += delta_chebF(energ,m0)*( greenR_chebF(energ,m1)*mu(m0,m1) ).imag() ;
 		
-		kernel[i] =  -1.0*out*(mu.SystemSize()/mu.HalfWidth()/mu.HalfWidth() );
+		kernel[i] =  -1.0*out*(mu.SystemSize()*mu.ScaleFactor()*mu.ShiftFactor() );
 	}
 
 	for( int i=0; i < num_div-1; i++)
-		outputfile<<energies[i]*mu.HalfWidth() + mu.BandCenter() <<" "<<kernel[i] <<std::endl;
+		outputfile<<energies[i]/mu.ScaleFactor() - mu.ShiftFactor() <<" "<<kernel[i] <<std::endl;
 
 	outputfile.close();
 

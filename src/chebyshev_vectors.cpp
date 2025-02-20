@@ -1,50 +1,31 @@
 #include "chebyshev_moments.hpp"
 
 
-int chebyshev::Vectors_sliced::IterateAllSliced(int s )
-{
-  size_t segment_size = ( s == num_sections_-1 ? last_section_size_ : section_size_ ),
-         segment_start = s * section_size_,
-         DIM = this->SystemSize();
-
-  
+int chebyshev::Vectors::IterateAll( )
+{	
 	//The vectorss Chebyshev0() and Chebyshev1() are assumed to have
 	// been initialized
-       linalg::extract_segment( Chebyshev0(), DIM, segment_start, Vector(0), segment_size);
+	linalg::copy( this->Chebyshev0() ,this->Vector(0) );
 	for(int m=1; m < this->NumberOfVectors(); m++ )
 	{
-	  linalg::extract_segment( Chebyshev1(), DIM, segment_start, Vector(m),  segment_size );
-	  this->Hamiltonian().Multiply(2.0,Chebyshev1(),-1.0,Chebyshev0());
-	  Chebyshev0().swap(Chebyshev1());
+		linalg::copy( Chebyshev1() , this->Vector(m) );
+		this->Hamiltonian().Multiply(2.0,Chebyshev1(),-1.0,Chebyshev0());
+		Chebyshev0().swap(Chebyshev1());
 	}
 	return 0;
 };
 
 
-int chebyshev::Vectors_sliced::MultiplySliced( SparseMatrixType &OP, int s)
+int chebyshev::Vectors::Multiply( SparseMatrixType &OP )
 {
-  size_t segment_size = ( s == num_sections_-1 ? last_section_size_ : section_size_ ),
-    segment_start = s * section_size_,
-    DIM = this->SystemSize();
-
-  Moments::vector_t tmp2(this->SystemSize());
-
 	assert( OP.rank() == this->SystemSize() );
-	if( OPV().size()!= OP.rank() )
-	       OPV() = Moments::vector_t ( OP.rank() );
-
-#pragma omp parallel for
-	for(int i=0; i<OP.rank(); i++){//not parallelized; with omp/ eigen this is straightforward;
-	  OPV()[i] = 0.0;
-	  tmp2[i] = 0.0;
-	}
-
+	if( this->OPV.size()!= OP.rank() )
+		this->OPV = Moments::vector_t ( OP.rank() );
 	
-	for(int m=0; m < this->NumberOfVectors(); m++ )
+	for(size_t m=0; m < this->NumberOfVectors(); m++ )
 	{
-	  linalg::introduce_segment(Chebmu_.ListElem(m), segment_size, OPV(), DIM, segment_start);
-		OP.Multiply(  OPV(), tmp2 );
-	  linalg::extract_segment(tmp2, DIM, segment_start, Chebmu_.ListElem(m), segment_size );
+		linalg::copy( this->Chebmu.ListElem(m), this->OPV ); 
+		OP.Multiply(  this->OPV, this->Chebmu.ListElem(m) );
 	}
 
 	return 0;
@@ -77,7 +58,7 @@ int chebyshev::Vectors::EvolveAll(const double DeltaT, const double Omega0)
 
 		double Jn1 = besselJ(n+1,x);	
 		this->Hamiltonian().Multiply(Chebyshev0(), Chebyshev1());
-		linalg::axpy(-value_t(2) * I * Jn1, Chebyshev1(), myVec);
+		linalg::axpy(-2 * I * Jn1, Chebyshev1(), myVec);
 		
 		auto nIp =-I;
 		while( 0.5*(std::abs(Jn)+std::abs(Jn1) ) > 1e-15)
@@ -86,7 +67,7 @@ int chebyshev::Vectors::EvolveAll(const double DeltaT, const double Omega0)
 			Jn  = Jn1;
 			Jn1 = besselJ(n, x);
 			this->Hamiltonian().Multiply(2.0, Chebyshev1(), -1.0, Chebyshev0());
-			linalg::axpy(value_t(2) * nIp * value_t(Jn1), Chebyshev0(), myVec);
+			linalg::axpy(2 * nIp *Jn1, Chebyshev0(), myVec);
 			Chebyshev0().swap(Chebyshev1());
 			n++;
 		}

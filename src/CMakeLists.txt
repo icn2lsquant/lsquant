@@ -8,14 +8,12 @@ set(KPM_LIB_SOURCES
  "chebyshev_vectors.cpp"
  "chebyshev_moments.cpp"
  "chebyshev_moments2D.cpp"
+ "chebyshev_momentsAC.cpp"
  "chebyshev_moments1D.cpp"
  "chebyshev_momentsTD.cpp"
+ "chebyshev_momentsLocal.cpp"
  "sparse_matrix.cpp"
  "special_functions.cpp"
- "Kubo_solver_FFT.cpp"
- "Kubo_solver_FFT_postProcess.cpp"
- "Greenwood_FFTs.cpp"
- "Bastin_FFTs.cpp"
 )
 
 #IF INTEL BACKEND IS USED
@@ -43,10 +41,30 @@ set(MAIN inline_compute-kpm-spectralOp )
 add_executable(${MAIN} inline_compute-kpm-spectralOp.cpp )
 target_link_libraries(${MAIN} ${KPM_LIB} )
 
+
+set(MAIN inline_compute-kpm-GetDeltaPhi )
+add_executable(${MAIN} inline_compute-kpm-GetDeltaPhi.cpp )
+target_link_libraries(${MAIN} ${KPM_LIB} )
+
+
+set(MAIN inline_compute-kpm-LocalDOS )
+add_executable(${MAIN} inline_compute-kpm-LocalDOS.cpp )
+target_link_libraries(${MAIN} ${KPM_LIB} )
+
+
+set(MAIN inline_compute-kpm-spacialresolution )
+add_executable(${MAIN} inline_compute-kpm-spacialresolution.cpp )
+target_link_libraries(${MAIN} ${KPM_LIB} )
+
+
 set(MAIN inline_spectralFunctionFromChebmom)
 add_executable(${MAIN} spectralFunctionFromChebmom.cpp )
 target_link_libraries(${MAIN} ${KPM_LIB} )
 
+
+set(MAIN inline_localDensitiesFromChebmom)
+add_executable(${MAIN} localDensitiesFromChebmom.cpp )
+target_link_libraries(${MAIN} ${KPM_LIB} )
 
 set(MAIN inline_kuboGreenwoodFromChebmom)
 add_executable(${MAIN} kuboGreenwoodFromChebmom.cpp)
@@ -64,7 +82,6 @@ set(MAIN inline_kuboBastinFromChebmom)
 add_executable(${MAIN} kuboBastinFromChebmom.cpp)
 target_link_libraries(${MAIN} ${KPM_LIB} )
 
-
 set(MAIN inline_kuboBastinSeaFromChebmom)
 add_executable(${MAIN} kuboBastinSeaFromChebmom.cpp)
 target_link_libraries(${MAIN} ${KPM_LIB} )
@@ -80,26 +97,33 @@ add_executable(${MAIN} timeCorrelationsFromChebmom.cpp  )
 target_link_libraries(${MAIN} ${KPM_LIB} )
 
 
-set(MAIN inline_compute-Kubo-kpm-FFT )
-add_executable(${MAIN} inline_compute-Kubo-kpm-FFT.cpp  )
+set(MAIN inline_opticalConductivityFromChebmom )
+add_executable(${MAIN} opticalConductivityFromChebmom.cpp  )
 target_link_libraries(${MAIN} ${KPM_LIB} )
 
 
-set(MAIN inline_spectralFunctionFromChebmom_FFTgrid)
-add_executable(${MAIN} spectralFunctionFromChebmom_FFTgrid.cpp )
+
+set(MAIN inline_compute-kpm-TimeEvProjetedOpWF )
+add_executable(${MAIN} inline_compute-kpm-TimeEvProjetedOp-Projecting_WF.cpp  )
 target_link_libraries(${MAIN} ${KPM_LIB} )
 
 
-set(MAIN inline_kuboGreenwoodFromChebmom_FFTgrid)
-add_executable(${MAIN} kuboGreenwoodFromChebmom_FFTgrid.cpp)
+set(MAIN inline_compute-kpm-MeanSquareDisplacement )
+add_executable(${MAIN} inline_compute-kpm-MeanSquareDisplacement.cpp  )
 target_link_libraries(${MAIN} ${KPM_LIB} )
 
 
-set(MAIN inline_kuboBastinFromChebmom_FFTgrid)
-add_executable(${MAIN} kuboBastinFromChebmom_FFTgrid.cpp)
+set(MAIN inline_compute-kpm-TimeEvProjetedOp )
+add_executable(${MAIN} inline_compute-kpm-TimeEvProjetedOp.cpp  )
 target_link_libraries(${MAIN} ${KPM_LIB} )
 
-set(MAIN inline_compute-kpm-spectralOp-nonOrth )
-add_executable(${MAIN} inline_compute-kpm-spectralOp-nonOrth.cpp )
+
+set(MAIN inline_compute-kpm-TimeEvOp )
+add_executable(${MAIN} inline_compute-kpm-TimeEvOp.cpp  )
 target_link_libraries(${MAIN} ${KPM_LIB} )
 
+
+
+set(MAIN inline_compute-kpm-TimeEvOpwithWF )
+add_executable(${MAIN} inline_compute-kpm-TimeEvOpwithWF.cpp  )
+target_link_libraries(${MAIN} ${KPM_LIB} )

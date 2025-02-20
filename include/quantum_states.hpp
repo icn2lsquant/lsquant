@@ -71,14 +71,14 @@ namespace qstates
 			{
 				switch (kind)
 				{
-					case LOCAL_STATE:					
-					        std::fill(out.begin(), out.end(), 0.0);
+					case LOCAL_STATE:
+						std::fill(out.begin(), out.end(), 0.0);
 						out[ spos[count] ] = 1.0;
 						break;
-						
 					case USER_STATE:
 						std::cout<<"Using vector at"<<spos[count]<<std::endl;
 						out.assign(data.begin()+spos[count] , data.begin()+spos[count]+ out.size() ); 
+
 						break;
 						
 						
@@ -87,9 +87,8 @@ namespace qstates
 						for( auto&x : out )
 						{
 							auto phi = 2.0*M_PI*(double)rand() / (double)RAND_MAX ;
-							x = 0;//*Complex(cos(phi)/norm,sin(phi)/norm );
+							x = Complex(cos(phi)/norm,sin(phi)/norm );
 						}
-						out[dim/2] = 1.0;
 						break;
 				}
 				count++;
@@ -207,7 +206,22 @@ namespace qstates
 			
 	return data;
 	};
-	
+
+
+
+	inline 
+	generator CreateLocalSet(std::vector<int> spos)
+	{
+		generator data;
+		data.kind = LOCAL_STATE;
+
+		data.NumberOfStates(spos.size());
+		data.spos=spos;
+		assert( data.spos.size() == data.num_states  );	
+	return data;
+	};
+
+
 	
 	inline
 	generator LoadStateFile( string filename)

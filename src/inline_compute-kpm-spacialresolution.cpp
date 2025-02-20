@@ -4,7 +4,7 @@
 #include <fstream>  /* for std::ofstream and std::ifstream functions classes*/
 #include <stdlib.h>
 #include <chrono>
-
+#include <vector>
 
 #include "kpm_noneqop.hpp" //Message functions
 #include "chebyshev_moments.hpp"
@@ -21,7 +21,7 @@ namespace spectral
 
 int main(int argc, char *argv[])
 {
-	if ( !(argc == 4 || argc == 5 ) )
+	if ( !( argc == 5 ) )
 	{
 		spectral::printHelpMessage();
 		return 0;
@@ -32,25 +32,24 @@ int main(int argc, char *argv[])
 	const std::string
 		LABEL  = argv[1],
 		S_OP   = argv[2],
-		S_NMOM = argv[3];
+		S_NMOM = argv[3],
+		ifile  = argv[4];
 
 	const int numMoms   = atoi(S_NMOM.c_str() );
-	chebyshev::Moments1D_nonOrth chebMoms( numMoms ); //load number of moments
+	chebyshev::Moments1D chebMoms( numMoms ); //load number of moments
 
-	const int NOPS = 3;
+	const int NOPS = 2;
 	SparseMatrixType OP[NOPS];
 	OP[0].SetID("HAM");
 	OP[1].SetID( S_OP );
-	OP[2].SetID( "S" );
 	
 	// Build the operators from Files
 	SparseMatrixBuilder builder;
 	std::array<double,2> spectral_bounds;	
 	
 	for (int i = 0; i < NOPS; i++)
-	  if( OP[i].isIdentity() ){
+	if( OP[i].isIdentity() )
 			std::cout<<"The operator "<<OP[i].ID()<<" is treated as the identity"<<std::endl;
-	  }
 	else
 	{
 		std::string input = "operators/" + LABEL + "." + OP[i].ID() + ".CSR";
@@ -71,22 +70,27 @@ int main(int argc, char *argv[])
 
 	//Compute the chebyshev expansion table
 	qstates::generator gen;
-	if( argc == 5)
-		gen  = qstates::LoadStateFile(argv[4]);
+	int spinswap=chebMoms.SystemSize()/2;
+	std::ifstream filepos(ifile);
+	std::vector<int> positions;
+	if (filepos){
+		int value;
+		while(filepos>>value){
+			positions.push_back(value);
+		}
+	}
+	for (int i=0;i<positions.size();i++){
+		gen = qstates::CreateLocalSet({positions[i],positions[i]+spinswap});	
+		chebyshev::SpectralMoments(OP[1],chebMoms, gen);
 
-	
+		auto prefix="SpectralOp"+OP[1].ID();
+		if( OP[1].isIdentity() )
+			prefix="SpectralOp"+OP[1].ID();
+		std::string outputfilename="./spaceresol/"+prefix+LABEL+"KPM_M"+S_NMOM+"_state"+"SpaceResol"+std::to_string(positions[i])+".chebmom1D";	
 
-
-	chebMoms.set_S(OP[2]);
-	chebyshev::SpectralMoments_nonOrth(OP[1],chebMoms, gen);
-
-	auto prefix="SpectralOp-nonOrth-"+OP[1].ID();
-	if( OP[1].isIdentity() )
-		prefix="Spectral-nonOrth-OP"+OP[1].ID();
-	std::string outputfilename=prefix+LABEL+"KPM_M"+S_NMOM+"_state"+gen.StateLabel()+".chebmom1D-nonOrth";	
-
-	std::cout<<"Saving the moments in  "<<outputfilename<<std::endl;
-	chebMoms.saveIn(outputfilename);
+		std::cout<<"Saving the moments in  "<<outputfilename<<std::endl;
+		chebMoms.saveIn(outputfilename);
+	}
 	std::cout<<"End of program"<<std::endl;
 	return 0;
 };

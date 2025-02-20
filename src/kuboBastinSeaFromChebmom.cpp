@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 			kernel[i] +=-( (Gr-Ga)*( DGr +DGa)*mu(m0,m1) ).real() ;
 //			kernel[i] +=-4*Gr.imag()*DGr.real()*mu(m0,m1).imag() ;
 		}
-		kernel[i] *=  mu.SystemSize()/mu.HalfWidth()/mu.HalfWidth() / 2 /M_PI;
+		kernel[i] *=  mu.SystemSize()*mu.ScaleFactor()*mu.ScaleFactor() / 2 /M_PI;
 	}
 
 	double acc = 0;
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 		const double energ  = energies[i];
 		const double denerg = energies[i+1]-energies[i];
 		acc +=0.5*(kernel[i]+kernel[i+1])*denerg;
-		outputfile<<energ*mu.HalfWidth() + mu.BandCenter() <<" "<<acc <<std::endl;
+		outputfile<<energ/mu.ScaleFactor() - mu.ShiftFactor() <<" "<<acc <<std::endl;
 	}
 
 	outputfile.close();

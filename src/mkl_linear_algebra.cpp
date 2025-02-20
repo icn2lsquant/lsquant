@@ -1,5 +1,5 @@
+
 #include "linear_algebra.hpp"
-#include <eigen-3.4.0/Eigen/Core>
 
 void linalg::scal(const complex<double>& a, vector< complex<double> >& x)
 {
@@ -78,55 +78,3 @@ void linalg::batch_vdot(const int dim,const int batchSize,const complex<double>*
 }
 
 
-
-void linalg::extract_segment(const vector< complex<double> >&x, size_t size_x, size_t start_x,  vector< complex<double> >& y, size_t size_y ){//size_x >> size_y
-
-#pragma omp parallel for 
-  for(size_t i = 0;  i < size_y ; i++)//&& (start_x + i < size_x)  !!!
-    y[i] = x[start_x + i];
-
-};
-
-void linalg::introduce_segment(const vector< complex<double> >&x, size_t size_x, vector< complex<double> >& y, size_t size_y, size_t start_y ){//size_y >> size_y
-
-
-#pragma omp parallel for 
-  for(size_t i = 0; i< size_x; i++)
-    y[start_y + i] = x[i];
-
-};  
-
-
-void linalg::orthogonalize(SparseMatrixType& S, vector< complex<double> >& orthogonalized, vector< complex<double> >& original){
-
-
-  int DIM = S.numRows(), NNZ=S.vals()->size();
-
-
-  int *rowsPtr = S.rows()->data();
-  int *colsPtr = S.cols()->data();
-  std::complex<double> *values = S.vals()->data();
-
-
-  Eigen::Map<Eigen::Vector<std::complex<double>, -1>>
-    eig_original(original.data(), DIM),
-    eig_orthogonalized(orthogonalized.data(), DIM);
-
-
-
-  Eigen::Map<Eigen::SparseMatrix<complex<double>, Eigen::RowMajor> > eigen_S( DIM, DIM, NNZ, rowsPtr, colsPtr, values);
-
-  
-  Eigen::BiCGSTAB<Eigen::SparseMatrix<std::complex<double>, Eigen::RowMajor> > solver;
-  solver.setTolerance(0.0001); 
-  solver.setMaxIterations(2000); 
-  solver.compute(eigen_S);
-  eig_orthogonalized = solver.solve(eig_original);
-
-
-  std::cout << "#iterations:     " << solver.iterations() << std::endl;
-  std::cout << "  max#iterations:" << solver.maxIterations() << std::endl;
-  std::cout << "estimated error: " << solver.error()      << std::endl;
-  std::cout << "  tolerance :    " << solver.tolerance()      << std::endl;
-  std::cout<<  "Vector norm :    " <<eig_original.norm()<<std::endl<<std::endl;    
-};

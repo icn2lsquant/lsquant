@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 		for( int m0 = 0 ; m0 < mu.HighestMomentNumber(0) ; m0++)
 		for( int m1 = 0 ; m1 < mu.HighestMomentNumber(1) ; m1++)
 			kernel[i] += delta_chebF(energ,m0)*delta_chebF(energ,m1)*mu(m0,m1).real() ;
-		kernel[i] *= M_PI * mu.SystemSize()/mu.HalfWidth()/mu.HalfWidth();
+		kernel[i] *= M_PI * mu.SystemSize()*mu.ScaleFactor()*mu.ScaleFactor();
 	}
 
 	double acc = 0;
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 		const double energ  = energies[i];
 		const double denerg = energies[i+1]-energies[i];
 		acc =(kernel[i+1]+kernel[i])/2.0;
-		outputfile<<energ*mu.HalfWidth() + mu.BandCenter() <<" "<<acc <<std::endl;
+		outputfile<<energ/mu.ScaleFactor() - mu.ShiftFactor() <<" "<<acc <<std::endl;
 	}
 
 	outputfile.close();

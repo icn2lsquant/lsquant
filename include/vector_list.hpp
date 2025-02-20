@@ -31,17 +31,6 @@ class VectorList
 			elem = vector_t(count); 
 	};
 
-  
-	void Resize( size_t list_count, size_t count, const T value = T(0) )
-	{
-	     _list_size = list_count;
-	     _vector_size = count;
-	     _data.resize( (list_count) );
-
-	   for( auto& elem : this->List() )
-		  elem = vector_t(count); 
-	};
-
 
 	inline
 	size_t VectorSize() const { return _vector_size; }
