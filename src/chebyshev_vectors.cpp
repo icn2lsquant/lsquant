@@ -1,5 +1,34 @@
 #include "chebyshev_moments.hpp"
 
+int chebyshev::Vectors::IterateAll( )
+{	
+	//The vectorss Chebyshev0() and Chebyshev1() are assumed to have
+	// been initialized
+	linalg::copy( this->Chebyshev0() ,this->Vector(0) );
+	for(int m=1; m < this->NumberOfVectors(); m++ )
+	{
+		linalg::copy( Chebyshev1() , this->Vector(m) );
+		this->Hamiltonian().Multiply(2.0,Chebyshev1(),-1.0,Chebyshev0());
+		Chebyshev0().swap(Chebyshev1());
+	}
+	return 0;
+};
+
+
+int chebyshev::Vectors::Multiply( SparseMatrixType &OP )
+{
+	assert( OP.rank() == this->SystemSize() );
+	if( this->OPV.size()!= OP.rank() )
+		this->OPV = Moments::vector_t ( OP.rank() );
+	
+	for(size_t m=0; m < this->NumberOfVectors(); m++ )
+	{
+		linalg::copy( this->Chebmu.ListElem(m), this->OPV ); 
+		OP.Multiply(  this->OPV, this->Chebmu.ListElem(m) );
+	}
+
+	return 0;
+};
 
 int chebyshev::Vectors_sliced::IterateAllSliced(int s )
 {
@@ -20,7 +49,6 @@ int chebyshev::Vectors_sliced::IterateAllSliced(int s )
 	}
 	return 0;
 };
-
 
 int chebyshev::Vectors_sliced::MultiplySliced( SparseMatrixType &OP, int s)
 {
@@ -100,4 +128,5 @@ double chebyshev::Vectors::MemoryConsumptionInGB()
 {
 	return SizeInGB()+2.0*( (double)this->SystemSize() )*pow(2.0,-30.0) ;
 }
+	
 	

@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 			const auto DGrR= DgreenR_chebF(energ,m1);
 			out +=-( (GrL*DGrR- DGrL*GrR)*mu(m0,m1) ).real() ;
 		}
-		kernel[i] =  out*mu.SystemSize()/mu.HalfWidth()/mu.HalfWidth() / 2 /M_PI;
+		kernel[i] =  out*mu.SystemSize()*mu.ScaleFactor()*mu.ScaleFactor() / 2 /M_PI;
 	}
 
 	double acc = 0;
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 		const double energ  = energies[i];
 		const double denerg = energies[i+1]-energies[i];
 		acc +=(kernel[i]+kernel[i+1])*denerg;
-		outputfile<<energ*mu.HalfWidth() + mu.BandCenter() <<" "<<acc <<std::endl;
+		outputfile<<energ/mu.ScaleFactor() - mu.ShiftFactor() <<" "<<acc <<std::endl;
 	}
 
 	outputfile.close();

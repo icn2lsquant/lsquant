@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 		for( int m1 = 0 ; m1 < mu.HighestMomentNumber(1) ; m1++)
 			out += delta_chebF(energ,m0)*( greenR_chebF(energ,m1)*mu(m0,m1) ).imag() ;
 		
-		kernel[i] = -1.0*out*(mu.SystemSize()/mu.HalfWidth()/mu.HalfWidth() );
+		kernel[i] = -1.0*out*(mu.SystemSize()*mu.ScaleFactor()*mu.ScaleFactor() );
 	}
 
 	double acc = 0;
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 		const double energ  = energies[i];
 		const double denerg = energies[i+1]-energies[i];
 		acc = 0.5*(kernel[i]+kernel[i+1]);
-		outputfile<<energ*mu.HalfWidth() + mu.BandCenter() <<" "<<acc <<std::endl;
+		outputfile<<energ/mu.ScaleFactor() - mu.ShiftFactor() <<" "<<acc <<std::endl;
 	}
 
 	outputfile.close();

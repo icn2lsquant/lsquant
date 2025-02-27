@@ -81,7 +81,7 @@ void chebyshev::Moments1D::ApplyJacksonKernel( const double broad )
 
   for( size_t m = 0 ; m < maxMom ; m++)
   {
-	  g_D_m = ( (maxMom - m + 1) * cos(phi_J * m) + sin(phi_J * m) * cos(phi_J) / sin(phi_J) ) * phi_J/M_PI;
+	  g_D_m = ( (maxMom - m + 1) * cos(phi_J * m) + sin(phi_J * m) /tan(phi_J) ) * phi_J/M_PI;
 	  this->operator()(m) *= g_D_m;
 	}
 }
@@ -113,6 +113,7 @@ void chebyshev::Moments1D::saveIn(std::string filename)
 {
   typedef std::numeric_limits<double> dbl;
   ofstream outputfile(filename.c_str());
+  assert(outputfile.is_open());
   outputfile.precision(dbl::digits10);
   outputfile << this->SystemSize() << " " << this->BandWidth() << " " << this->BandCenter()<<std::endl;
   //Print the number of moments for all directions in a line
@@ -122,7 +123,5 @@ void chebyshev::Moments1D::saveIn(std::string filename)
     outputfile << mom.real() << " " << mom.imag() << std::endl;
   outputfile.close();
 };
-
-
 
 

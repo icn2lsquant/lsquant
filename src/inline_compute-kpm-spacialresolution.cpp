@@ -4,7 +4,7 @@
 #include <fstream>  /* for std::ofstream and std::ifstream functions classes*/
 #include <stdlib.h>
 #include <chrono>
-
+#include <vector>
 
 #include "kpm_noneqop.hpp" //Message functions
 #include "chebyshev_moments.hpp"
@@ -18,10 +18,9 @@ namespace spectral
 	void printWelcomeMessage();
 };
 
-
 int main(int argc, char *argv[])
 {
-	if ( !(argc == 4 || argc == 5 ) )
+	if ( !( argc == 5 ) )
 	{
 		spectral::printHelpMessage();
 		return 0;
@@ -32,7 +31,8 @@ int main(int argc, char *argv[])
 	const std::string
 		LABEL  = argv[1],
 		S_OP   = argv[2],
-		S_NMOM = argv[3];
+		S_NMOM = argv[3],
+		ifile  = argv[4];
 
 	const int numMoms   = atoi(S_NMOM.c_str() );
 	chebyshev::Moments1D chebMoms( numMoms ); //load number of moments
@@ -69,28 +69,30 @@ int main(int argc, char *argv[])
 
 	//Compute the chebyshev expansion table
 	qstates::generator gen;
-	if( argc == 6)
-		gen  = qstates::LoadStateFile(argv[4]);
+	int spinswap=chebMoms.SystemSize()/2;
+	std::ifstream filepos(ifile);
+	std::vector<int> positions;
+	if (filepos){
+		int value;
+		while(filepos>>value){
+			positions.push_back(value);
+		}
+	}
+	for (int i=0;i<positions.size();i++){
+		gen = qstates::CreateLocalSet({positions[i],positions[i]+spinswap});	
+		chebyshev::SpectralMoments(OP[1],chebMoms, gen);
 
-		
-	//gen.NumberOfStates(std::stoi(argv[4]));
+		auto prefix="SpectralOp"+OP[1].ID();
+		if( OP[1].isIdentity() )
+			prefix="SpectralOp"+OP[1].ID();
+		std::string outputfilename="./spaceresol/"+prefix+LABEL+"KPM_M"+S_NMOM+"_state"+"SpaceResol"+std::to_string(positions[i])+".chebmom1D";	
 
-
-
-
-	chebyshev::SpectralMoments(OP[1],chebMoms, gen);
-
-	auto prefix="SpectralOp"+OP[1].ID();
-	if( OP[1].isIdentity() )
-		prefix="SpectralOp"+OP[1].ID();
-	std::string outputfilename=prefix+LABEL+"KPM_M"+S_NMOM+"_state"+gen.StateLabel()+".chebmom1D";	
-
-	std::cout<<"Saving the moments in  "<<outputfilename<<std::endl;
-	chebMoms.saveIn(outputfilename);
+		std::cout<<"Saving the moments in  "<<outputfilename<<std::endl;
+		chebMoms.saveIn(outputfilename);
+	}
 	std::cout<<"End of program"<<std::endl;
 	return 0;
 };
-
 
 	void spectral::printHelpMessage()
 	{
@@ -104,7 +106,7 @@ int main(int argc, char *argv[])
 	
 	void spectral::printWelcomeMessage()
 	{
-		std::cout << "WELCOME: This program will compute a list needed for expanding the spectral function in Chebyshev polynomials" << std::endl;
+		std::cout << "WELCOME: This program will compute a list needed for expanding the spectral function in Chebyshev polynomialms" << std::endl;
 	};
 
 

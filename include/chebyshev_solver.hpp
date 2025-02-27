@@ -47,11 +47,25 @@ namespace chebyshev
 	
 	int CorrelationExpansionMoments( SparseMatrixType &OPL, SparseMatrixType &OPR,  chebyshev::Moments2D &chebMoms, qstates::generator& gen );
 
-	int TimeDependentCorrelations( SparseMatrixType &OP, SparseMatrixType &PROJ,  chebyshev::MomentsTD &chebMoms, qstates::generator& gen);
+	int TimeDependentCorrelations( SparseMatrixType &OPL, SparseMatrixType &OPR,  chebyshev::MomentsTD &chebMoms, qstates::generator& gen);
 
 	int SpectralMoments(SparseMatrixType &OP,  chebyshev::Moments1D &chebMoms, qstates::generator& gen);
 
-  	int SpectralMoments_nonOrth(SparseMatrixType &OP, chebyshev::Moments1D_nonOrth &chebMoms, qstates::generator& gen);
+    int SpectralMoments_nonOrth(SparseMatrixType &OP, chebyshev::Moments1D_nonOrth &chebMoms, qstates::generator& gen);
+	
+        int TimeEvolvedProjectedOperator(SparseMatrixType &OP, SparseMatrixType &OPPRJ,  chebyshev::MomentsTD &chebMoms, qstates::generator& gen  );
+
+        int TimeEvolvedOperator(SparseMatrixType &OP,  chebyshev::MomentsTD &chebMoms, qstates::generator& gen  );
+
+	int MeanSquareDisplacement(chebyshev::MomentsTD &chebMoms, qstates::generator& gen  );
+
+	int TimeEvolvedProjectedOperatorWF(SparseMatrixType &OP, SparseMatrixType &OPRJ,  chebyshev::MomentsTD &chebMoms, qstates::generator& gen  );
+    
+      	int TimeEvolvedOperatorWithWF(chebyshev::MomentsTD &chebMoms, qstates::generator& gen  );
+
+	int ComputeDeltaPhi( SparseMatrixType &OP,  chebyshev::MomentsLocal &chebMoms, qstates::generator& gen);
+
+	int ComputeDeltaPhi2( SparseMatrixType &OP,  chebyshev::MomentsTD &chebMoms, qstates::generator& gen ,double Energy);
 
         int SpectralMoments_nonOrth_test(SparseMatrixType &OP, SparseMatrixType &orth_Ham, chebyshev::Moments1D_nonOrth &chebMoms, qstates::generator& gen);
 

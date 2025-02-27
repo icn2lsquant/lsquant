@@ -36,10 +36,8 @@ double chebyshev::Moments::JacksonKernel(const double m,  const double Mom )
 {
 	const double
 	phi_J = M_PI/(double)(Mom+1.0);
-	return ( (Mom-m+1)*cos( phi_J*m )+ sin(phi_J*m)*cos(phi_J)/sin(phi_J) )*phi_J/M_PI;
+	return ( (Mom-m+1)*cos( phi_J*m )+ sin(phi_J*m)/tan(phi_J) )*phi_J/M_PI;
 };
-
-
 
 void chebyshev::Moments::SetInitVectors( const Moments::vector_t& T0 )
 {

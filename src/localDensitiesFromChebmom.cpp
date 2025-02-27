@@ -15,7 +15,10 @@ void printHelpMessage();
 void printWelcomeMessage();
 
 int main(int argc, char *argv[])
-{	
+{
+
+
+	bool Binflag=true;
 	if (argc != 4)
 	{
 		printHelpMessage();
@@ -29,44 +32,50 @@ int main(int argc, char *argv[])
 
 
 	//Read the chebyshev moments from the file
- 	chebyshev::MomentsTD mu(argv[1]); 
+ 	chebyshev::MomentsLocal mu(argv[1],Binflag);
+	
+	
+	 
 	//and apply the appropiated kernel
 	mu.ApplyJacksonKernel(broadening);
 	
 	mu.Print();
 	
 
-	const int num_div = 30*mu.HighestMomentNumber();
 
 	const double
 	x = mu.Rescale2ChebyshevDomain(fermiEner);
 		
 	
-	std::cout<<"Computing the equillibriu, time-correlations using "<<mu.HighestMomentNumber()<<" x "<<mu.MaxTimeStep()<<" TD moments "<<std::endl;
+	std::cout<<"Computing the equillibrium, LDoS using "<<mu.HighestMomentNumber()<<" x "<<mu.NumberOfOrbitals()<<" orbitals "<<std::endl;
 	std::cout<<"on the fermi energy:"<<fermiEner<<" which is normalized to "<<x<< std::endl;
 	std::cout<<"The first 10 moments are"<<std::endl;
 	for(int m0 =0 ; m0< 1; m0++ )
 	for(int m1 =0 ; m1< 10; m1++ )
 		std::cout<<mu(m0,m1).real()<<" "<<mu(m0,m1).imag()<<std::endl;
-	
-	std::string
-	outputName  ="mean"+mu.SystemLabel()+"EF"+std::to_string(fermiEner)+"JACKSON.dat";
+
+	std::string outputName;	
+	if (Binflag){
+		outputName  ="mean"+mu.SystemLabel()+"EF"+std::to_string(fermiEner)+"JACKSON.bin.dat";
+	}else{
+		outputName  ="mean"+mu.SystemLabel()+"EF"+std::to_string(fermiEner)+"JACKSON.dat";
+	}
 
 
 	std::cout<<"Saving the data in "<<outputName<<std::endl;
 	std::cout<<"PARAMETERS: "<< mu.SystemSize()<<" "<<mu.HalfWidth()<<std::endl;
 
 	std::ofstream outputfile( outputName.c_str() );
-	for( int n = 0 ; n < mu.MaxTimeStep(); n++)
+	for( int n = 0 ; n < mu.NumberOfOrbitals(); n++)
 	{
 		
 //		if( n == mu.MaxTimeStep()-1)for( double x=-0.99; x<0.99; x=x+0.01){
 		double output = 0.0;
 		for( int m = 0 ; m < mu.HighestMomentNumber() ; m++)
 				output += delta_chebF(x,m)*mu(m,n).real() ;
-		output *=  mu.SystemSize()*mu.ScaleFactor();
+		output *= mu.ScaleFactor();
 //		outputfile<<x*mu.HalfWidth() + mu.BandCenter() <<" "<<output <<std::endl;}
-		outputfile<<n*mu.TimeDiff() <<" "<<output <<std::endl;
+		outputfile<<output <<std::endl;
 		
 	}
 	outputfile.close();
@@ -78,15 +87,15 @@ return 0;
 
 void printHelpMessage()
 {
-	std::cout << "The program should be called with the following options: moments_filename broadening(meV) maximum_time (fs)" << std::endl
+	std::cout << "The program should be called with the following options: moments_filename broadening(meV) fermi energy (eV)" << std::endl
 			  << std::endl;
 	std::cout << "moments_filename will be used to look for .chebmomTD file" << std::endl;
 	std::cout << "broadening in (meV) will define the broadening of the delta functions" << std::endl;
-	std::cout << "The Fermi energy in (meV) ." << std::endl;
+	std::cout << "The Fermi energy in (eV) ." << std::endl;
 
 };
 
 void printWelcomeMessage()
 {
-	std::cout << "WELCOME: This program will sum the chebyshev moments for obtaining the time-evolution of a correlator in equilibrium" << std::endl;
+	std::cout << "WELCOME: This program will sum the chebyshev moments for obtaining the local densities of states at equilibrium" << std::endl;
 };
