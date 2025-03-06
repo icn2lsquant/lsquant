@@ -25,6 +25,7 @@ set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 # just add them in this list (after a space), or add an include_directories statement in a
 # subdirectory's CMakeLists.
 message( ${PROJECT_SOURCE_DIR} )
+include_directories(${CONDA_PREFIX}/include/eigen3)
 include_directories(
     ${PROJECT_SOURCE_DIR}/include
 )

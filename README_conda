@@ -1,0 +1,11 @@
+To compile please use:
+
+mkdir build
+cd build
+export CPATH=$CONDA_PREFIX/include:$CPATH
+cmake -DCMAKE_TOOLCHAIN_FILE=../toolchain-gcc.cmake  ..
+cmake --build .
+
+#cmake -DCMAKE_TOOLCHAIN_FILE=../toolchain-icc+mkl.cmake  ..
+#Requires Eigen and FFTW
+
