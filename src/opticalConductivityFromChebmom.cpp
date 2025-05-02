@@ -126,9 +126,13 @@ void printHelpMessage()
 	std::cout << "moments_filename will be used to look for .chebmom2D file" << std::endl;
 	std::cout << "Freq_file is the file that stores the Frequencies. (See documentation for format)" << std::endl;
 	std::cout << "broadening in (meV) will define the broadening of the delta functions" << std::endl;
+	
+	std::cout << "Please remember to have a AC_MatterBounds file in this folder with proper format:" <<std::endl <<std::endl << "min_E max_E" <<std:: endl<<std::endl;
+
 };
 
 void printWelcomeMessage()
 {
 	std::cout << "WELCOME: This program will compute the chebyshev sum of the kubo-bastin formula for non equlibrium properties" << std::endl;
+
 };
